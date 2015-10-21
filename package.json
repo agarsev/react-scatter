@@ -12,7 +12,8 @@
   "author": "Antonio F. G. Sevilla <antonio@garciasevilla.com>",
   "license": "AGPL-3.0",
   "dependencies": {
-    "react": "^0.14.0"
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0"
   },
   "devDependencies": {
     "babelify": "^6.4.0",

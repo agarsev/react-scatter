@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import ScatterPlot from '..';
 
-React.render(<ScatterPlot />, document.body);
+ReactDOM.render(<ScatterPlot />, document.getElementById('plot'));
