@@ -72,12 +72,11 @@ export default class Plot extends React.Component {
 
         c.clearRect(0,0,w,h);
 
-        draw.grid(c, { grid: true, axes: true, labels: true,
-                      cpx: w/2+this.state.x,
-                      cpy: h/2+this.state.y,
-                      major: 1,
-                      pxpu: this.pxpu,
-                      w, h
+        draw.grid({ ctx: c, grid: true, axes: true, labels: true,
+            cpx: w/2+this.state.x, cpy: h/2+this.state.y,
+            w, h, major: 1,
+            pxpu: this.pxpu,
+            style: { major: '#aaf' }
         });
     }
 
