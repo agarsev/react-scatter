@@ -1,5 +1,7 @@
 import React from 'react';
 
+import * as draw from './draw.jsx';
+
 export default class Plot extends React.Component {
 
     constructor (props) {
@@ -7,26 +9,38 @@ export default class Plot extends React.Component {
         this.state = {
             // plot center
             x: 0, y: 0,
-            // plot scale
-            sx: 1/100, sy: 1/100,
+            scale: 10
         };
     }
 
     render () {
-        return <div>
+        return <div
+                onMouseDown={this.mousedown.bind(this)}
+            >
             <canvas
                 ref={(c) => this.canvas = c}
-                onMouseDown={this.mousedown.bind(this)}
             />
         </div>;
     }
 
-    componentDidMount () {
+    updateSize () {
+        let w = this.canvas.width = this.canvas.scrollWidth;
+        let h = this.canvas.height = this.canvas.scrollHeight;
+        this.pxpu = (w>h?h:w)/(2.0*this.state.scale);
         this.draw();
     }
 
+    componentDidMount () {
+        window.addEventListener("resize", this.updateSize.bind(this));
+        this.updateSize();
+    }
+
+    componentWillUnmount () {
+        window.removeEventListener("resize", this.updateSize.bind(this));
+    }
+
     componentDidUpdate () {
-        this.draw();
+        this.updateSize();
     }
 
     mousedown (e) {
@@ -34,12 +48,12 @@ export default class Plot extends React.Component {
             oldy = this.state.y;
         let startx = e.clientX,
             starty = e.clientY;
-        let sx = this.state.sx,
-            sy = this.state.sy;
         let mmove = (e) => {
-            this.setState({
-                x: (oldx + (e.clientX - startx)/sx),
-                y: (oldy + (e.clientY - starty)/sy)
+            requestAnimationFrame(() => {
+                this.setState({
+                    x: oldx + (e.clientX - startx),
+                    y: oldy + (e.clientY - starty)
+                });
             });
         };
         let mup = () => {
@@ -52,16 +66,19 @@ export default class Plot extends React.Component {
 
     draw () {
         let canvas = this.canvas,
-            c = canvas.getContext('2d');
+            c = canvas.getContext('2d'),
+            w = canvas.width,
+            h = canvas.height;
 
-        c.clearRect(0,0,canvas.scrollWidth,canvas.scrollHeight);
+        c.clearRect(0,0,w,h);
 
-        let x = this.state.x*this.state.sx,
-            y = this.state.y*this.state.sy;
-
-        c.beginPath();
-        c.arc(x, y, 2, 0, 2*Math.PI);
-        c.fill();
+        draw.grid(c, { grid: true, axes: true, labels: true,
+                      cpx: w/2+this.state.x,
+                      cpy: h/2+this.state.y,
+                      major: 1,
+                      pxpu: this.pxpu,
+                      w, h
+        });
     }
 
 }
