@@ -6,10 +6,12 @@ export default class Plot extends React.Component {
 
     constructor (props) {
         super(props);
+        let {
+            scale = 10,
+        } = props.init;
+        let x = 0, y = 0;
         this.state = {
-            // plot center
-            x: 0, y: 0,
-            scale: 10
+            x, y, scale
         };
     }
 
@@ -26,7 +28,7 @@ export default class Plot extends React.Component {
     updateSize () {
         let w = this.canvas.width = this.canvas.scrollWidth;
         let h = this.canvas.height = this.canvas.scrollHeight;
-        this.pxpu = (w>h?h:w)/(2.0*this.state.scale);
+        this.pxpu = (w>h?h:w)/this.state.scale;
         this.draw();
     }
 
@@ -68,15 +70,17 @@ export default class Plot extends React.Component {
         let canvas = this.canvas,
             c = canvas.getContext('2d'),
             w = canvas.width,
-            h = canvas.height;
+            h = canvas.height,
+            center = this.props.init.center,
+            x = this.state.x-center[0]*this.pxpu,
+            y = this.state.y+center[1]*this.pxpu;
 
         c.clearRect(0,0,w,h);
 
         draw.grid({ ctx: c, grid: true, axes: true, labels: true,
-            cpx: w/2+this.state.x, cpy: h/2+this.state.y,
+            cpx: w/2+x, cpy: h/2+y,
             w, h, major: 1,
-            pxpu: this.pxpu,
-            style: { major: '#aaf' }
+            pxpu: this.pxpu
         });
     }
 
