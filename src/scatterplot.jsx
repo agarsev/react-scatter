@@ -68,20 +68,28 @@ export default class Plot extends React.Component {
 
     draw () {
         let canvas = this.canvas,
-            c = canvas.getContext('2d'),
+            ctx = canvas.getContext('2d'),
             w = canvas.width,
             h = canvas.height,
             center = this.props.init.center,
-            x = this.state.x-center[0]*this.pxpu,
-            y = this.state.y+center[1]*this.pxpu;
+            pxpu = this.pxpu,
+            x = this.state.x-center[0]*pxpu,
+            y = this.state.y+center[1]*pxpu,
+            cpx = w/2+x,
+            cpy = h/2+y;
 
-        c.clearRect(0,0,w,h);
+        ctx.clearRect(0,0,w,h);
 
-        draw.grid({ ctx: c, grid: true, axes: true, labels: true,
-            cpx: w/2+x, cpy: h/2+y,
-            w, h, major: 1,
-            pxpu: this.pxpu
+        draw.grid({ ctx, grid: true, axes: true, labels: true,
+            cpx, cpy, w, h, major: 1, pxpu
         });
+
+        for (let d of this.props.datasets) {
+            draw.points({ ctx, cpx, cpy, pxpu,
+                points: d.points,
+                color: d.color
+            });
+        }
     }
 
 }

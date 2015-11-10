@@ -82,3 +82,18 @@ export function grid ({
     }
 
 }
+
+export function points ({
+    ctx, cpx, cpy, pxpu,
+    color = '#f00', points
+    }) {
+
+    ctx.fillStyle = color;
+    for (let p of points) {
+        let x = cpx+p[0]*pxpu,
+            y = cpy-p[1]*pxpu;
+        ctx.beginPath();
+        ctx.arc(x, y, 2, 0, 2*Math.PI);
+        ctx.fill();
+    }
+}
