@@ -85,10 +85,7 @@ export default class Plot extends React.Component {
         });
 
         for (let d of this.props.datasets) {
-            draw.points({ ctx, cpx, cpy, pxpu,
-                points: d.points,
-                color: d.color
-            });
+            draw.points({ ctx, cpx, cpy, pxpu, ...d });
         }
     }
 

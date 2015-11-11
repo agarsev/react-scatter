@@ -83,17 +83,59 @@ export function grid ({
 
 }
 
+const DISC_BASE_RADIUS = 2.3;
+const SQUARE_BASE_SIZE = 4.2;
+const SQUARE_HALFSIZE = SQUARE_BASE_SIZE/2;
+const DIAMOND_BASE_HEIGHT = 4;
+const DIAMOND_BASE_WIDTH = 3;
+
 export function points ({
     ctx, cpx, cpy, pxpu,
-    color = '#f00', points
+    color = '#f00', shape, lines = false,
+    pointsize = 1,
+    points
     }) {
 
+    let shapes = {
+        disc (x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, DISC_BASE_RADIUS*pointsize, 0, 2*Math.PI);
+            ctx.fill();
+        },
+        square (x, y) {
+            ctx.beginPath();
+            ctx.rect(x-SQUARE_HALFSIZE*pointsize, y-SQUARE_HALFSIZE*pointsize,
+                     SQUARE_BASE_SIZE*pointsize, SQUARE_BASE_SIZE*pointsize);
+            ctx.fill();
+        },
+        diamond (x, y) {
+            ctx.beginPath();
+            ctx.moveTo(x, y-DIAMOND_BASE_HEIGHT*pointsize);
+            ctx.lineTo(x+DIAMOND_BASE_WIDTH*pointsize, y);
+            ctx.lineTo(x, y+DIAMOND_BASE_HEIGHT*pointsize);
+            ctx.lineTo(x-DIAMOND_BASE_WIDTH*pointsize, y);
+            ctx.closePath();
+            ctx.fill();
+        },
+        none () {}
+    }
+
+    let draw = shapes[shape] || (lines ? shapes.none : shapes.disc);
     ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    let first = true;
     for (let p of points) {
         let x = cpx+p[0]*pxpu,
             y = cpy-p[1]*pxpu;
-        ctx.beginPath();
-        ctx.arc(x, y, 2, 0, 2*Math.PI);
-        ctx.fill();
+        if (lines && !first) {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+        draw(x, y);
+        if (lines) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            first = false;
+        }
     }
 }
